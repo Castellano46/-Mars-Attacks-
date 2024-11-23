@@ -6,6 +6,7 @@ from src.bullet import Bullet
 from src.enemy import Enemy
 from src.explosion import Explosion
 from src.utils import load_assets, reset_game_state
+from src.scores import save_score  # Importar función para guardar puntuaciones
 
 class MarsAttacksGame:
     def __init__(self):
@@ -26,7 +27,7 @@ class MarsAttacksGame:
         except FileNotFoundError as e:
             print(f"Error al cargar recursos: {e}")
             sys.exit()
-        
+
         self.font = pygame.font.Font(None, 36)
 
         # Inicializar elementos del juego
@@ -69,8 +70,7 @@ class MarsAttacksGame:
                 self.lives -= 1
                 self.assets['sounds']['explosion'].play()
                 if self.lives <= 0:
-                    self.game_over = True
-                    self.assets['sounds']['game_over'].play()
+                    self.end_game()  # Terminar el juego al perder todas las vidas
             elif enemy.rect.top > self.height:
                 self.enemies.remove(enemy)
 
@@ -140,6 +140,11 @@ class MarsAttacksGame:
         )
         self.background = self.assets["background"]
         self.game_over = False
+
+    def end_game(self):
+        self.game_over = True
+        self.assets['sounds']['game_over'].play()
+        save_score(self.score)  # Guardar la puntuación al finalizar el juego
 
     def run(self):
         while True:
