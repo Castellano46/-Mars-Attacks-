@@ -20,6 +20,7 @@ class MarsAttacksGame:
         # Reloj y estado del juego
         self.clock = pygame.time.Clock()
         self.game_over = False
+        self.paused = False  # Estado del juego (pausado o no)
 
         # Cargar recursos
         try:
@@ -39,22 +40,24 @@ class MarsAttacksGame:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT and not self.paused:
                     self.player.move_left()
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT and not self.paused:
                     self.player.move_right()
-                elif event.key == pygame.K_SPACE and not self.game_over:
+                elif event.key == pygame.K_SPACE and not self.game_over and not self.paused:
                     bullet = Bullet(self.player.rect, self.assets['bullet'])
                     self.bullets.append(bullet)
                     self.assets['sounds']['shoot'].play()
                 elif event.key == pygame.K_r and self.game_over:
                     self.reset_game()
-            if event.type == pygame.KEYUP:
+                elif event.key == pygame.K_p:  # Pausar/Reanudar el juego con la tecla "P"
+                    self.paused = not self.paused
+            if event.type == pygame.KEYUP and not self.paused:
                 if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
                     self.player.stop()
 
     def update(self):
-        if self.game_over:
+        if self.game_over or self.paused:
             return
 
         self.player.update()
@@ -131,6 +134,11 @@ class MarsAttacksGame:
             self.screen.blit(game_over_text, (self.width // 2 - game_over_text.get_width() // 2, self.height // 3))
             self.screen.blit(restart_text, (self.width // 2 - restart_text.get_width() // 2, self.height // 1.5))
 
+        # Si el juego está pausado, muestra "Paused"
+        if self.paused:
+            paused_text = self.font.render("PAUSED", True, (255, 255, 0))
+            self.screen.blit(paused_text, (self.width // 2 - paused_text.get_width() // 2, self.height // 2))
+
         # Actualiza la pantalla
         pygame.display.flip()
 
@@ -140,6 +148,7 @@ class MarsAttacksGame:
         )
         self.background = self.assets["background"]
         self.game_over = False
+        self.paused = False  # Reanudar el juego cuando se reinicia
 
     def end_game(self):
         self.game_over = True
