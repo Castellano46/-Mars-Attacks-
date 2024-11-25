@@ -3,6 +3,7 @@ from src.menu import MainMenu
 from src.utils import load_assets
 from src.scores import display_scores, display_instructions
 import pygame
+import sys
 
 if __name__ == "__main__":
     pygame.init()

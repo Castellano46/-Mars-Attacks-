@@ -8,14 +8,14 @@ def get_scores():
     if not os.path.exists(SCORES_FILE):
         return []
     with open(SCORES_FILE, "r") as file:
-        return [line.strip() for line in file.readlines()]
+        return [int(line.strip()) for line in file.readlines()]
 
 def save_score(score):
     with open(SCORES_FILE, "a") as file:
         file.write(f"{score}\n")
 
 def display_scores(screen):
-    scores = get_scores()
+    scores = sorted(get_scores(), reverse=True)  # Ordenar puntuaciones descendente
     font = pygame.font.Font(None, 50)
     screen.fill((0, 0, 0))
 
@@ -38,6 +38,7 @@ def display_instructions(screen):
         "Press SPACE to shoot.",
         "Destroy enemies to gain points.",
         "Survive as long as possible!",
+        "Press R to return to the menu.",
     ]
 
     for i, line in enumerate(instructions):
